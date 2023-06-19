@@ -27,6 +27,10 @@ const db = [
 function Advanced () {
   const [currentIndex, setCurrentIndex] = useState(db.length - 1)
   const [lastDirection, setLastDirection] = useState()
+
+  // NEW STATE FOR REQUIREMENT FULFILLED CALLBACK
+  const [currentDirection, setCurrentDirection] = useState();
+
   // used for outOfFrame closure
   const currentIndexRef = useRef(currentIndex)
 
@@ -95,6 +99,16 @@ function Advanced () {
             key={character.name}
             onSwipe={(dir) => swiped(dir, character.name, index)}
             onCardLeftScreen={() => outOfFrame(character.name, index)}
+            
+          // NEW SETTINGS TO UPDATE STATE ON REQUIREMENT FULFILLED
+          swipeRequirementType="position"
+          swipeThreshold={100}
+          onSwipeRequirementFulfilled={(dir) => {
+            setCurrentDirection(dir);
+          }}
+          onSwipeRequirementUnfulfilled={() => {
+            setCurrentDirection("None");
+          }}
           >
             <div
               style={{ backgroundImage: 'url(' + character.url + ')' }}
@@ -110,6 +124,10 @@ function Advanced () {
         <button style={{ backgroundColor: !canGoBack && '#c3c4d3' }} onClick={() => goBack()}>Undo swipe!</button>
         <button style={{ backgroundColor: !canSwipe && '#c3c4d3' }} onClick={() => swipe('right')}>Swipe right!</button>
       </div>
+
+      {/* CONSUME UPDATED STATE FROM CALLBACK */}
+      <h2>Swiping {currentDirection}</h2>
+      
       {lastDirection ? (
         <h2 key={lastDirection} className='infoText'>
           You swiped {lastDirection}
